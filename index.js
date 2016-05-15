@@ -31,13 +31,15 @@ var isReady = function(name, value) {
 
 class Trello  {
 
-    constructor(key) {
+    constructor(key, options={}) {
         this.setKey(key);
         this.version = 1
         this.storagePrefix = 'trello_';
         this.baseURL = 'https://api.trello.com/' + this.version + '/';
         this.authEndpoint = 'https://trello.com';
         this._token = null;
+        this.fetch = options.fetch;
+        this.openLink = options.openLink;
     }
 
     version() {
@@ -89,8 +91,8 @@ class Trello  {
         var onSuccess = (response) => {
             return new Promise((resolve, reject) => response.json().then(resolve));
         };
-
-      return fetch(url, options).then(onSuccess).catch(error);
+        var fetch = this.fetch || window.fetch;
+        return fetch(url, options).then(onSuccess).catch(error);
     }
 
     authorized() {
@@ -142,51 +144,50 @@ class Trello  {
             //todo: Lodash map?
             var scopeKeys = Object.keys(opts.scope);
             var scope = scopeKeys.filter(key => opts.scope[key]).join(',');
-      switch (opts.type) {
-        case "popup":
-            var authWindow, height, left, origin, receiveMessage, ref1, top, width;
-            waitUntil("authorized", () => isAuthorized => {
-            });
-            width = 420;
-            height = 470;
-            left = window.screenX + (window.innerWidth - width) / 2;
-            top = window.screenY + (window.innerHeight - height) / 2;
-            origin = (ref1 = /^[a-z]+:\/\/[^\/]*/.exec(window.location)) != null ? ref1[0] : void 0;
-            authWindow = window.open(this.authorizeURL({
-              return_url: origin,
-              callback_method: "postMessage",
-              scope: scope,
-              expiration: opts.expiration,
-              name: opts.name
-            }), "trello", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top);
-            receiveMessage = (event) => {
-                if (event.origin !== this.authEndpoint || event.source !== authWindow) {
-                    return;
-                }
-                //TODO: Make this safe with _.result/_.defer
-                setTimeout(() =>event.source.close(), 0)
+            switch (opts.type) {
+            case "popup":
+                var authWindow, height, left, origin, receiveMessage, ref1, top, width, openLink;
+                width = 420;
+                height = 470;
+                left = window.screenX + (window.innerWidth - width) / 2;
+                top = window.screenY + (window.innerHeight - height) / 2;
+                origin = (ref1 = /^[a-z]+:\/\/[^\/]*/.exec(window.location)) != null ? ref1[0] : void 0;
+                openLink = this.openLink || (url => window.open(url, "trello", `width=${width},height=${height},left=${left},top=${top}`));
+                authWindow = openLink(this.authorizeURL({
+                  return_url: origin,
+                  callback_method: "postMessage",
+                  scope: scope,
+                  expiration: opts.expiration,
+                  name: opts.name
+                }));
+                receiveMessage = (event) => {
+                    if (event.origin !== this.authEndpoint || event.source !== authWindow) {
+                        return;
+                    }
+                    //TODO: Make this safe with _.result/_.defer
+                    setTimeout(() =>event.source.close(), 0)
 
-                window.removeEventListener("message", receiveMessage, false)
-                if (event.data && /[0-9a-f]{64}/.test(event.data)) {
-                    this._token = event.data
-                    persistToken();
-                    resolve()
-                }
-                else {
-                    this._token = null
-                    reject();
-                }
-            };
-            window.addEventListener("message", receiveMessage, false)
-          break;
-        default:
-          window.location = this.authorizeURL({
-            redirect_uri: window.location.href,
-            callback_method: "fragment",
-            scope: scope,
-            expiration: opts.expiration,
-            name: opts.name
-          });
+                    window.removeEventListener("message", receiveMessage, false)
+                    if (event.data && /[0-9a-f]{64}/.test(event.data)) {
+                        this._token = event.data
+                        persistToken();
+                        resolve()
+                    }
+                    else {
+                        this._token = null
+                        reject();
+                    }
+                };
+                window.addEventListener("message", receiveMessage, false)
+                break;
+            default:
+              window.location = this.authorizeURL({
+                redirect_uri: window.location.href,
+                callback_method: "fragment",
+                scope: scope,
+                expiration: opts.expiration,
+                name: opts.name
+              });
         }
         });
     }
