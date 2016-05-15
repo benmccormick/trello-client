@@ -1,0 +1,11 @@
+{
+  "name": "trello-client",
+  "version": "0.0.1",
+  "description": "A promise based Trello client usable from npm",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "benmccormick <ben.mccormick@alumni.duke.edu> (http://benmccormick.org/)",
+  "license": "MIT"
+}

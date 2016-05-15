@@ -1,0 +1,45 @@
+<html>
+<body>
+<!-- <script   src="https://code.jquery.com/jquery-2.2.3.js"   integrity="sha256-laXWtGydpwqJ8JA+X9x2miwmaiKhn8tVmOVEigRNtP4="   crossorigin="anonymous"></script> -->
+<script >
+var opts = {
+    key: 'fff04b1ff0f9447a9551576e2fdb52fa',
+    apiEndpoint: 'https://api.trello.com',
+    authEndpoint: 'https://trello.com',
+    version: '1',
+};
+</script>
+<!-- <script src="https://trello.com/1/client.js?key=fff04b1ff0f9447a9551576e2fdb52fa"></script> -->
+<script src="index.js"></script>
+<script>
+let t = new Trello('fff04b1ff0f9447a9551576e2fdb52fa')
+t.authorize({
+  type: 'popup',
+  name: 'Getting Started Application',
+  scope: {
+    read: true,
+    write: true
+  },
+  expiration: 'never',
+}).then(() => {
+    t.get('members/me').then((data) => console.log(data));
+});
+</script>
+<!-- <script src="index.js?key=fff04b1ff0f9447a9551576e2fdb52fa"></script>
+<script>
+var authenticationSuccess = function() { console.log('Successful authentication'); };
+var authenticationFailure = function() { console.log('Failed authentication'); };
+Trello.authorize({
+  type: 'popup',
+  name: 'Getting Started Application',
+  scope: {
+    read: true,
+    write: true },
+  expiration: 'never',
+  success: authenticationSuccess,
+  error: authenticationFailure
+});
+Trello.get('members/me', (data) => console.log(data))
+</script> -->
+</body>
+</html>
