@@ -1,5 +1,6 @@
 {
-  "name": "trello-client",
+  "name": "troll-client",
+  "repository": "benmccormick/trello-client",
   "version": "0.0.1",
   "description": "A promise based Trello client usable from npm",
   "main": "index.js",
