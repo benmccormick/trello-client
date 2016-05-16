@@ -12,10 +12,6 @@ var waitUntil = function(name, fx) {
     }
 };
 
-var isFunction = function(val) {
-    return typeof val === "function";
-};
-
 var isReady = function(name, value) {
     var fx, fxs, i, len;
     ready[name] = value;
@@ -206,7 +202,7 @@ class Trello  {
     }
 
     parseRestArgs([path, params, success, error]) {
-        if (isFunction(params)) {
+        if (typeof params === 'function') {
           error = success;
           success = params;
           params = {};
