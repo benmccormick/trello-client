@@ -79,7 +79,7 @@ class Trello  {
         if (['head', 'get'].indexOf(method.toLowerCase()) === -1) {
             options.body = JSON.stringify(data);
         } else {
-            let params = Object.keys(data).map(key => `${key}=${encodeURIComponent(data[key])}`);
+            let params = Object.keys(data).map(key => `${key}=${data[key]}`);
             paramsStr = `?${params.join('&')}`;
         }
         var url = "" + this.baseURL + path + paramsStr;
